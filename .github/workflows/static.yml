@@ -1,9 +1,11 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+# Deploy static content to GitHub Pages using GitHub Actions
+name: Deploy static content to GitHub Pages
 
 on:
+  # Ejecuta el workflow en cualquier push a cualquier branch
   push:
-    branches: ["main"]
+    branches: ["*"]
+  # Permite lanzarlo manualmente
   workflow_dispatch:
 
 permissions:
@@ -11,25 +13,30 @@ permissions:
   pages: write
   id-token: write
 
+# Controla que solo haya un deployment activo a la vez
 concurrency:
   group: "pages"
-  cancel-in-progress: true   # <---- CAMBIO AQUÍ
+  cancel-in-progress: true
 
 jobs:
   deploy:
+    runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
-      - name: Upload artifact
+
+      - name: Upload artifact for GitHub Pages
         uses: actions/upload-pages-artifact@v3
         with:
+          # Subir el contenido del repositorio actual
           path: '.'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
